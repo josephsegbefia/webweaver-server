@@ -4,7 +4,11 @@ const { Schema, model } = mongoose;
 
 const projectSchema = new Schema({
   title: String,
-  description: String
+  description: String,
+  imgUrl: String
+},
+{
+  timestamps: true
 });
 
-module.exports = module('Project', projectSchema);
+module.exports = model('Project', projectSchema);
