@@ -28,6 +28,7 @@ function emailSchema(opts = {}) {
 }
 
 const profileSchema = new Schema({
+  user: { type: Schema.Types.ObjectId, ref: 'User'},
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   headLine: { type: String, required: true },

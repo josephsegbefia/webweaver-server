@@ -29,15 +29,8 @@ const userSchema = new Schema({
   firstName: { type: String },
   lastName: { type: String },
   email: emailSchema(),
-  password: { type: String, required: true }
-
-  // headLine: { type: String },
-  // phone: { type: String },
-  // about: { type: String, required: true },
-  // avatarUrl: urlSchema(),
-  // skills: { type: [String] },
-  // linkedInUrl: urlSchema(),
-  // gitHubUrl: urlSchema()
+  password: { type: String, required: true },
+  // profile: {type: Schema.Types.ObjectId, ref: 'Profile'}
 });
 
 const User = model("User", userSchema);
