@@ -31,7 +31,8 @@ const userSchema = new Schema({
   email: emailSchema(),
   password: { type: String, required: true },
   emailToken: { type: String },
-  passwordResetToken: { type: String }
+  passwordResetToken: { type: String },
+  isVerified: { type: Boolean, default: false }
   // profile: {type: Schema.Types.ObjectId, ref: 'Profile'}
 });
 
