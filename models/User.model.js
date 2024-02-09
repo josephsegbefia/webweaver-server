@@ -30,6 +30,8 @@ const userSchema = new Schema({
   lastName: { type: String },
   email: emailSchema(),
   password: { type: String, required: true },
+  emailToken: { type: String },
+  passwordResetToken: { type: String }
   // profile: {type: Schema.Types.ObjectId, ref: 'Profile'}
 });
 
