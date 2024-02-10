@@ -105,7 +105,7 @@ router.post("/login", (req, res, next) => {
       if (!foundUser.isVerified) {
         res.status(401).json({
           message:
-            "Please login to the email you provided, a verification link has been sent to you"
+            "Please verify your account before trying to login. A verification link has been sent to you"
         });
         return;
       }
