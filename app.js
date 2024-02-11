@@ -21,7 +21,7 @@ const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
 const projectRouter = require('./routes/project.routes');
-app.use('/api', isAuthenticated, projectRouter);
+app.use('/api', projectRouter);
 
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
