@@ -55,7 +55,8 @@ router.post("/signup", (req, res, next) => {
       lastName,
       password: hashedPassword,
       emailToken: crypto.randomBytes(64).toString("hex"),
-      passwordResetToken: crypto.randomBytes(64).toString("hex")
+      passwordResetToken: crypto.randomBytes(64).toString("hex"),
+      profile: null,
     })
       .then((createdUser) => {
         const {
