@@ -13,10 +13,7 @@ const saltRounds = 10;
 // Post
 router.post("/signup", (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
-  const name = firstName.toLowerCase();
-  const surname = lastName.toLowerCase();
-  const hex = crypto.randomBytes(64).toString("hex").slice(0, 6)
-  const uniqueIdentifier = `${name}-${surname}-${hex}`;
+
 
   // Check if the email or password or name is provided as an empty string
   if (email === "" || password === "" || firstName === "" || lastName === "") {
@@ -57,7 +54,7 @@ router.post("/signup", (req, res, next) => {
       email,
       firstName,
       lastName,
-      uniqueIdentifier: uniqueIdentifier,
+
       password: hashedPassword,
       emailToken: crypto.randomBytes(64).toString("hex"),
       passwordResetToken: crypto.randomBytes(64).toString("hex"),

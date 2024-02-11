@@ -37,7 +37,8 @@ const profileSchema = new Schema({
   avatarURL: urlSchema(),
   skills: [String],
   linkedInURL: urlSchema(),
-  gitHubURL: urlSchema()
+  gitHubURL: urlSchema(),
+  uniqueIdentifier: { type: String},
 });
 
 module.exports = model("Profile", profileSchema);

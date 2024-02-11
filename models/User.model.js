@@ -28,7 +28,6 @@ function urlSchema(opts = {}) {
 const userSchema = new Schema({
   firstName: { type: String },
   lastName: { type: String },
-  uniqueIdentifier: { type: String},
   email: emailSchema(),
   password: { type: String, required: true },
   emailToken: { type: String },
