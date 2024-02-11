@@ -184,7 +184,7 @@ router.post("/password-reset", async (req, res, next) => {
     res.status(200).json({ message: "Password updated!" });
   } catch (error) {
     console.log(error);
-    res.status(500).json("Internal Server Error");
+    res.status(500).json("Password reset token is invalid");
   }
 });
 
@@ -199,7 +199,7 @@ router.post("/password-reset-email", async (req, res, next) => {
         message: "Password reset email has been sent to your email"
       });
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: "User with that email does not exist" });
     }
   } catch (error) {
     console.log(error);
