@@ -1,6 +1,7 @@
 const express = require('express');
 const crypto = require("crypto");
 const Portfolio = require('../models/Portfolio.model');
+const Project = require('../models/Project.model');
 const User = require('../models/User.model');
 const mongoose = require('mongoose');
 
@@ -79,6 +80,7 @@ router.put('/portfolios/:uniqueIdentifier', (req, res, next) => {
       if(!portfolio){
         res.status(400).json({ message: 'Portfolio not found!'})
       }
+      return;
     })
 
   Portfolio.findOneAndUpdate({ uniqueIdentifier: uniqueIdentifier}, req.body, { new: true })
@@ -94,6 +96,18 @@ router.put('/portfolios/:uniqueIdentifier', (req, res, next) => {
 
 router.delete('/portfolios/:uniqueIdentifier', async (req, res, next) => {
   try {
+    const { uniqueIdentifier } = req.params;
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier });
+    if(!portfolio){
+      res.status(400).json({ message: 'Portfolio not found' })
+      return;
+    }
+
+    await Project.deleteMany({ portfolio: portfolio._id });
+    await portfolio.deleteOne();
+    // console.log("PORT===>",portfolio)
+
+    res.status(200).json({ message: 'Portfolio with its associated projects removed'});
 
   }catch(error){
     console.log(error)
