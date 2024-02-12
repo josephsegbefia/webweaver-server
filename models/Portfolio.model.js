@@ -27,7 +27,7 @@ function emailSchema(opts = {}) {
   };
 }
 
-const profileSchema = new Schema({
+const portfolioSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User'},
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -39,6 +39,9 @@ const profileSchema = new Schema({
   linkedInURL: urlSchema(),
   gitHubURL: urlSchema(),
   uniqueIdentifier: { type: String},
+  projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }]
+}, {
+  timestamps: true
 });
 
-module.exports = model("Profile", profileSchema);
+module.exports = model("Portfolio", portfolioSchema);
