@@ -92,8 +92,13 @@ router.put('/portfolios/:uniqueIdentifier', (req, res, next) => {
 
 // Delete a users portfolio --DELETE-- /api/portfolios/:uniqueIdentifier
 
-router.delete('/portfolios/:uniqueIdentifier', (req, res, next) => {
-  const { uniqueIdentifier }= req.params;
+router.delete('/portfolios/:uniqueIdentifier', async (req, res, next) => {
+  try {
+
+  }catch(error){
+    console.log(error)
+    res.status(500).json({ message: 'Internal Server Error'})
+  }
 })
 
 module.exports = router;
