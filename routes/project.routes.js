@@ -6,25 +6,20 @@ const Project = require('../models/Project.model');
 const Portfolio = require('../models/Portfolio.model');
 
 
-router.post('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
-  const {title, description, imgUrl, shortDesc, techsUsed } = req.body;
-  const { uniqueIdentifier } = req.params;
+router.post('/portfolios/:uniqueIdentifier/projects', async (req, res, next) => {
+  try{
+    const {title, description, imgUrl, shortDesc, techsUsed } = req.body;
+    const { uniqueIdentifier } = req.params;
 
-  Project.create({
-    title, description, imgUrl, shortDesc, techsUsed
-  })
-  .then((newProject) => {
-    return Portfolio.findOneAndUpdate(uniqueIdentifier, {
-      $push: { projects: newProject._id }
-    })
-  })
-  .then((response) => {
-    res.status(200).json({ message: 'Nice work on adding a new project!'})
-  })
-  .catch((error) => {
-    console.log(error);
-    res.status(500).json({ message: 'Ooopps! Something went wrong.'})
-  })
+    const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
+    const newProject = await Project.create({ title, shortDesc, description, imgUrl, techsUsed, portfolio: foundPortfolio._id});
+
+    res.status(200).json({ newProject, message: 'Nice work on adding a new project!'})
+
+  }catch(error){
+    console.log(error)
+    res.status(500).json({ message: "Ooops, something went wrong!"})
+  }
 });
 
 router.get('/projects', (req, res, next) => {
