@@ -3,16 +3,28 @@ const mongoose = require('mongoose');
 
 const router = require('express').Router();
 const Project = require('../models/Project.model');
+const Portfolio = require('../models/Portfolio.model');
 
 
-router.post('/projects', (req, res, next) => {
-  const {title, description, imgUrl } = req.body;
+router.post('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
+  const {title, description, imgUrl, shortDesc, techsUsed } = req.body;
+  const { uniqueIdentifier } = req.params;
 
   Project.create({
-    title, description, imgUrl
+    title, description, imgUrl, shortDesc, techsUsed
   })
-  .then((response) => res.json(response))
-  .catch((error) => res.json(error))
+  .then((newProject) => {
+    return Portfolio.findOneAndUpdate(uniqueIdentifier, {
+      $push: { projects: newProject._id }
+    })
+  })
+  .then((response) => {
+    res.status(200).json({ message: 'Nice work on adding a new project!'})
+  })
+  .catch((error) => {
+    console.log(error);
+    res.status(500).json({ message: 'Ooopps! Something went wrong.'})
+  })
 });
 
 router.get('/projects', (req, res, next) => {
