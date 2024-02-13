@@ -5,6 +5,27 @@ const mongoose = require('mongoose');
 
 const router = express.Router();
 
+
+// Create a message --POST-- /api/portfolios/:uniqueIdentifier/messages
+router.post('/portfolios/:uniqueIdentifier/messages', async (req, res, next) => {
+  try {
+    const { senderName, senderEmail, content } = req.body;
+    const { uniqueIdentifier } = req.params;
+
+    const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier });
+    const newMessage = await Message.create({ senderName, senderEmail, content, portfolio: foundPortfolio._id });
+    const updatedPortfolio = await Portfolio.findOneAndUpdate({ uniqueIdentifier: uniqueIdentifier}, {
+      $push: { messages: newMessage._id}
+    });
+
+    res.status(200).json({ newMessage, message: 'Thank you for reaching out' });
+
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ message: 'Ooops, something went wrong!'});
+  }
+})
+
 // Get all messages belonging to a portfolio --GET-- /api/portfolios/:uniqueIndentifier/messages
 router.get('/portfolios/:uniqueIdentifier/messages', (req, res, next) => {
   const { uniqueIdentifier } = req.params;
