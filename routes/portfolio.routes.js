@@ -10,11 +10,12 @@ const router = express.Router();
 // Create a portfolio  -- POST -- /api/portfolios
 router.post('/portfolios', async (req, res, next) => {
   try {
-    const { user, headLine, phone, avatarURL, skills, linkedInURL, gitHubURL } = req.body;
+    const { user, headLine, phone, avatarURL, skills, linkedInURL, gitHubURL, bio, location } = req.body;
     const portfolioUser = await User.findById(user);
     const userLastName = portfolioUser.lastName;
     const userFirstName = portfolioUser.firstName;
     const userEmail = portfolioUser.email;
+
 
     const name = userFirstName.toLowerCase();
     const surname = userLastName.toLowerCase();
@@ -30,11 +31,16 @@ router.post('/portfolios', async (req, res, next) => {
       return;
     }
 
+    portfolioUser.uniqueIdentifier = uniqueIdentifier;
+    await portfolioUser.save();
+
     const createdPortfolio = await Portfolio.create({
       user: user,
       lastName: userLastName,
       firstName: userFirstName,
       email: userEmail,
+      bio,
+      location,
       headLine,
       phone,
       avatarURL,

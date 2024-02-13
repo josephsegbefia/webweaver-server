@@ -31,6 +31,7 @@ const portfolioSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User'},
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  bio: { type: String, required: true },
   headLine: { type: String, required: true },
   email: emailSchema(),
   phone: { type: String, required: true },
