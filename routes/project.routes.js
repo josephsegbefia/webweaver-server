@@ -100,18 +100,42 @@ router.put('/portfolios/:uniqueIdentifier/projects/:projectId', async (req, res,
 
 
 
-router.delete('/projects/:projectId', (req, res, next) => {
-  const { projectId } = req.params;
+router.delete('/portfolios/:uniqueIdentifier/projects/:projectId', async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, projectId } = req.params;
 
-  if(!mongoose.Types.ObjectId.isValid(projectId)){
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
+    // Find the portfolio based on the unique identifier
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier }).populate('projects');
+
+    // Check if the portfolio exists
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found!' });
+    }
+
+    // Find the index of the project within the portfolio's projects array
+    const projectIndex = portfolio.projects.findIndex(project => project._id.toString() === projectId);
+
+    // Check if the project exists in the portfolio
+    if (projectIndex === -1) {
+      return res.status(404).json({ message: 'Project not found in your portfolio' });
+    }
+
+    // Remove the project from the projects array
+    portfolio.projects.splice(projectIndex, 1);
+
+    // Save the updated portfolio without the deleted project
+    await portfolio.save();
+
+    // Delete the project from the database
+    await Project.findByIdAndDelete(projectId);
+
+    res.status(200).json({ message: 'Project deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Oops! Something went wrong.' });
   }
-
-  Project.findByIdAndDelete(projectId)
-    .then(() => res.json({ message: `Project with ${projectId} has been deleted.` }))
-    .catch(error => res.json(error));
 });
+
 
 
 module.exports = router;
