@@ -39,7 +39,8 @@ const portfolioSchema = new Schema({
   linkedInURL: urlSchema(),
   gitHubURL: urlSchema(),
   uniqueIdentifier: { type: String},
-  projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }]
+  projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
+  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
 }, {
   timestamps: true
 });

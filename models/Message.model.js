@@ -16,7 +16,8 @@ function emailSchema(opts = {}) {
 const messageSchema = new Schema({
   senderName: { type: String },
   senderEmail: emailSchema(),
-  content: { type: String }
+  content: { type: String },
+  portfolio: { type: Schema.Types.ObjectId, ref: 'Portfolio'}
 },
 {
   timestamps: true
