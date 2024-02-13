@@ -34,11 +34,22 @@ const portfolioSchema = new Schema({
   headLine: { type: String, required: true },
   email: emailSchema(),
   phone: { type: String, required: true },
+  location: { type: String, required: true },
   avatarURL: urlSchema(),
   skills: [String],
+  languages: [String],
   linkedInURL: urlSchema(),
   gitHubURL: urlSchema(),
   uniqueIdentifier: { type: String},
+  interests: [String],
+  // To be added later
+  // Experience will be a model on its own and will be referenced here.
+  // experience: [{position: { type: String }, location: {type: String}, company: { type: String },startDate: { type: Date }, endDate: { type: Date }],
+  // certifications: [{
+  //   name: { type: String },
+  //   issuer: { type: String },
+  //   issueDate: { type: Date }
+  // }]
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
 }, {
