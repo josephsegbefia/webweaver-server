@@ -61,4 +61,43 @@ router.get('/portfolios/:uniqueIdentifier/messages/:messageId', (req, res, next)
     })
     .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }))
 })
+
+
+// Delete a message --DELETE-- /api/portfolios/:uniqueIdentifier/messages/:messageId
+router.delete('/portfolios/:uniqueIdentifier/messages/:messageId', async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, messageId } = req.params;
+
+    // Find the portfolio based on the unique identifier
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier }).populate('messages');
+
+    // Check if the portfolio exists
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found!' });
+    }
+
+    // Find the index of the project within the portfolio's projects array
+    const messageIndex = portfolio.messages.findIndex(message => message._id.toString() === messageId);
+
+    // Check if the project exists in the portfolio
+    if (messageIndex === -1) {
+      return res.status(404).json({ message: 'Message not found in your portfolio' });
+    }
+
+    // Remove the project from the projects array
+    portfolio.messages.splice(messageIndex, 1);
+
+    // Save the updated portfolio without the deleted project
+    await portfolio.save();
+
+    // Delete the project from the database
+    await Message.findByIdAndDelete(messageId);
+
+    res.status(200).json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Oops! Something went wrong.' });
+  }
+});
+
 module.exports = router;

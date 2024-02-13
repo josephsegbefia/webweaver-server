@@ -17,6 +17,7 @@ const messageSchema = new Schema({
   senderName: { type: String },
   senderEmail: emailSchema(),
   content: { type: String },
+  read: {type: Boolean, default: false },
   portfolio: { type: Schema.Types.ObjectId, ref: 'Portfolio'}
 },
 {
