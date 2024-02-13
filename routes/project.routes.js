@@ -38,7 +38,7 @@ router.get('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
       }
       res.status(200).json(portfolio.projects);
     })
-    .catch(error => res.status(500).json({ message: 'Internal Server Error', error }));
+    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
 })
 
 router.get('/portfolios/:uniqueIdentifier/projects/:projectId', (req, res, next) => {
@@ -61,22 +61,43 @@ router.get('/portfolios/:uniqueIdentifier/projects/:projectId', (req, res, next)
       // Return the first (and only) project in the array
       res.status(200).json(portfolio.projects[0]);
     })
-    .catch(error => res.status(500).json({ message: 'Internal Server Error', error }));
+    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
 });
 
 
-router.put('/projects/:projectId', (req, res, next) => {
-  const { projectId } = req.params;
+router.put('/portfolios/:uniqueIdentifier/projects/:projectId', async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, projectId } = req.params;
+  // Extract the fields to be updated from the request body
+    const { title, shortDesc, techsUsed, description, imgUrl } = req.body;
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('projects')
+    if(!portfolio){
+      return res.status(404).json({ message: 'Portfolio not found!'});
+    };
 
-  if (!mongoose.Types.ObjectId.isValid(projectId)){
-    res.status(400).json({ message: 'Specified id is not valid' });
-    return;
+    const projectToUpdate = portfolio.projects.find(project => project._id.toString() === projectId);
+
+    if(!projectToUpdate){
+      res.status(404).json({ message: 'Project was not found in your portfolio'})
+    }
+
+    projectToUpdate.title = title;
+    projectToUpdate.shortDesc = shortDesc;
+    projectToUpdate.description = description;
+    projectToUpdate.imgUrl = imgUrl;
+    projectToUpdate.techsUsed = techsUsed;
+    // projectToUpdate.portfolio = portfolio._id;
+    await projectToUpdate.save()
+    // const projectToUpdate = await portfolio.projects
+
+    res.status(200).json(projectToUpdate);
+
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message: "Ooops something happened!"})
   }
-
-  Project.findByIdAndUpdate(projectId, req.body, { new: true })
-    .then((updatedProject) => res.json(updatedProject))
-    .catch(error => res.json(error));
 });
+
 
 
 router.delete('/projects/:projectId', (req, res, next) => {
