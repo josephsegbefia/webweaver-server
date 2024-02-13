@@ -1,12 +1,25 @@
 const mongoose = require('mongoose');
 // const { Schema, model } = mongoose;
+const { isAuthenticated } = require('../middleware/jwt.middleware');
+const fileUploader = require('../config/cloudinary.config');
 
 const router = require('express').Router();
 const Project = require('../models/Project.model');
 const Portfolio = require('../models/Portfolio.model');
 
+// Route to upload portfolio image:
+router.post('/image-upload', fileUploader.single('imgUrl'), (req, res, next) => {
+  console.log("File is==>", req.file);
 
-router.post('/portfolios/:uniqueIdentifier/projects', async (req, res, next) => {
+  if(!req.file){
+    next(new Error('No file uploaded'));
+    return;
+  }
+
+  res.json({ fileUrl: req.file.path })
+})
+
+router.post('/portfolios/:uniqueIdentifier/projects', isAuthenticated, async (req, res, next) => {
   try{
     const {title, description, imgUrl, shortDesc, techsUsed } = req.body;
     const { uniqueIdentifier } = req.params;
@@ -65,7 +78,7 @@ router.get('/portfolios/:uniqueIdentifier/projects/:projectId', (req, res, next)
 });
 
 
-router.put('/portfolios/:uniqueIdentifier/projects/:projectId', async (req, res, next) => {
+router.put('/portfolios/:uniqueIdentifier/projects/:projectId', isAuthenticated, async (req, res, next) => {
   try {
     const { uniqueIdentifier, projectId } = req.params;
   // Extract the fields to be updated from the request body
@@ -100,7 +113,7 @@ router.put('/portfolios/:uniqueIdentifier/projects/:projectId', async (req, res,
 
 
 
-router.delete('/portfolios/:uniqueIdentifier/projects/:projectId', async (req, res, next) => {
+router.delete('/portfolios/:uniqueIdentifier/projects/:projectId', isAuthenticated, async (req, res, next) => {
   try {
     const { uniqueIdentifier, projectId } = req.params;
 
