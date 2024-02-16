@@ -1,23 +1,13 @@
 const mongoose = require('mongoose');
 // const { Schema, model } = mongoose;
 const { isAuthenticated } = require('../middleware/jwt.middleware');
-const fileUploader = require('../config/cloudinary.config');
+
 
 const router = require('express').Router();
 const Project = require('../models/Project.model');
 const Portfolio = require('../models/Portfolio.model');
 
-// Route to upload portfolio image:
-router.post('/image-upload', fileUploader.single('imgUrl'), (req, res, next) => {
-  console.log("File is==>", req.file);
 
-  if(!req.file){
-    next(new Error('No file uploaded'));
-    return;
-  }
-
-  res.json({ fileUrl: req.file.path })
-})
 
 router.post('/portfolios/:uniqueIdentifier/projects', isAuthenticated, async (req, res, next) => {
   try{

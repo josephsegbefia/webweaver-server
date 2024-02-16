@@ -4,13 +4,26 @@ const Portfolio = require('../models/Portfolio.model');
 const Project = require('../models/Project.model');
 const User = require('../models/User.model');
 const mongoose = require('mongoose');
+const fileUploader = require('../config/cloudinary.config');
 
 const router = express.Router();
+
+// Route to upload portfolio image:
+router.post('/image-upload', fileUploader.single('imgUrl'), (req, res, next) => {
+  console.log("File is==>", req.file);
+
+  if(!req.file){
+    next(new Error('No file uploaded'));
+    return;
+  }
+
+  res.json({ fileUrl: req.file.path })
+})
 
 // Create a portfolio  -- POST -- /api/portfolios
 router.post('/portfolios', async (req, res, next) => {
   try {
-    const { user, headLine, phone, avatarURL, skills, linkedInURL, gitHubURL, bio, location } = req.body;
+    const { user, headLine, phone, avatarURL, linkedInURL, gitHubURL, bio, location } = req.body;
     const portfolioUser = await User.findById(user);
     const userLastName = portfolioUser.lastName;
     const userFirstName = portfolioUser.firstName;
@@ -31,8 +44,8 @@ router.post('/portfolios', async (req, res, next) => {
       return;
     }
 
-    portfolioUser.uniqueIdentifier = uniqueIdentifier;
-    await portfolioUser.save();
+    // portfolioUser.uniqueIdentifier = uniqueIdentifier;
+    // await portfolioUser.save();
 
     const createdPortfolio = await Portfolio.create({
       user: user,
@@ -44,16 +57,18 @@ router.post('/portfolios', async (req, res, next) => {
       headLine,
       phone,
       avatarURL,
-      skills,
+      skills: [],
       linkedInURL,
       gitHubURL,
       uniqueIdentifier: uniqueIdentifier,
-      projects: []
+      projects: [],
+      messages: [],
+      languages:[],
     });
 
     console.log(createdPortfolio._id);
 
-    const updatedUser = await User.findByIdAndUpdate(user, { portfolio: createdPortfolio._id }, { new: true });
+    const updatedUser = await User.findByIdAndUpdate(user, { portfolio: createdPortfolio._id, uniqueIdentifier: uniqueIdentifier }, { new: true });
 
     res.status(200).json(createdPortfolio);
   } catch (error) {
