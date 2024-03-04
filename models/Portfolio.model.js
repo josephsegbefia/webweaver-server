@@ -8,7 +8,6 @@ function urlSchema(opts = {}) {
   return {
     type: String,
     required: !!required,
-    default: '',
     validate: {
       validator: isURL,
       message: (props) => `$(props.value) is not a valid URL`
@@ -21,7 +20,6 @@ function emailSchema(opts = {}) {
   return {
     type: String,
     required: !!required,
-    default: '',
     validate: {
       validator: isEmail,
       message: (props) => `${props.value} is not a valid email address`
