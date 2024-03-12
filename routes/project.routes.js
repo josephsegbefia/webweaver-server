@@ -31,9 +31,21 @@ router.post('/portfolios/:uniqueIdentifier/projects', isAuthenticated, async (re
 router.get('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
 
   const { uniqueIdentifier } = req.params;
+  const { limit, offset } = req.query;
+
+  const limitValue = parseInt(limit) || 6;
+  const offsetValue = parseOnt(offset) || 0;
+
 
   Portfolio.findOne({ uniqueIdentifier })
-    .populate('projects', '-__v')
+    .populate({
+      path:'projects',
+      select: '-__v',
+      options: {
+        limit: limitValue,
+        skip: offsetValue
+      }
+    })
     .select('projects')
     .then(portfolio => {
       if (!portfolio) {

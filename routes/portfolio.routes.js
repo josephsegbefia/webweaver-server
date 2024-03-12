@@ -81,6 +81,14 @@ router.post('/portfolios', async (req, res, next) => {
 router.get('/portfolios/:uniqueIdentifier', (req, res, next) => {
   const { uniqueIdentifier } = req.params;
 
+  // Portfolio.fondOne({ uniqueIdentifier })
+  //   .then((foundPortfolio) => {
+  //     if(!foundPortfolio){
+  //       res.status(401).json({ message: "Portfolio not found" });
+  //       return;
+  //     }
+  //   })
+
   Portfolio.find({ uniqueIdentifier })
     .populate('projects')
     .then((portfolio) => {
