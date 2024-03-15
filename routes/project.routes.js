@@ -34,27 +34,39 @@ router.get('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
   const { limit, offset } = req.query;
 
   const limitValue = parseInt(limit) || 6;
-  const offsetValue = parseOnt(offset) || 0;
-
+  const offsetValue = parseInt(offset) || 0;
 
   Portfolio.findOne({ uniqueIdentifier })
-    .populate({
-      path:'projects',
-      select: '-__v',
-      options: {
-        limit: limitValue,
-        skip: offsetValue
-      }
-    })
+    .populate('projects', '-__v')
     .select('projects')
     .then(portfolio => {
       if (!portfolio) {
         return res.status(404).json({ message: 'Portfolio not found' });
       }
-      res.status(200).json(portfolio.projects);
+
+      const totalCount = portfolio.projects.length;
+
+      const totalPages = Math.ceil(totalCount / limitValue);
+
+
+      Portfolio.findOne({ uniqueIdentifier })
+        .populate({
+          path: 'projects',
+          select: '-__v',
+          options: {
+            limit: limitValue,
+            skip: offsetValue
+          }
+        })
+        .select('projects')
+        .then(paginatedPortfolio => {
+          res.status(200).json({ projects: paginatedPortfolio.projects, totalPages });
+        })
+        .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
     })
     .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
 })
+
 
 router.get('/portfolios/:uniqueIdentifier/projects/:projectId', (req, res, next) => {
   const { uniqueIdentifier, projectId } = req.params;
