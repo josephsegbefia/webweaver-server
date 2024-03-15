@@ -52,7 +52,8 @@ const portfolioSchema = new Schema({
   //   issueDate: { type: Date }
   // }]
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
-  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }]
+  messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+  education: [{ type: Schema.Types.ObjectId, ref: 'Education' }]
 }, {
   timestamps: true
 });

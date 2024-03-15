@@ -29,6 +29,8 @@ app.use("/auth", authRouter);
 const portfolioRouter = require('./routes/portfolio.routes');
 app.use('/api', portfolioRouter);
 
+const educationRouter = require('./routes/education.routes');
+app.use('/api', educationRouter);
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
