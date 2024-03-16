@@ -8,26 +8,76 @@ const Project = require('../models/Project.model');
 const Portfolio = require('../models/Portfolio.model');
 
 
-
 router.post('/portfolios/:uniqueIdentifier/projects', isAuthenticated, async (req, res, next) => {
-  try{
-    const {title, description, imgUrl, shortDesc, techsUsed } = req.body;
+  try {
+    const { title, description, imgUrl, shortDesc, techsUsed } = req.body;
     const { uniqueIdentifier } = req.params;
 
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
-    const newProject = await Project.create({ title, shortDesc, description, imgUrl, techsUsed, portfolio: foundPortfolio._id});
-    const updatedPortfolio = await Portfolio.findOneAndUpdate({ uniqueIdentifier: uniqueIdentifier }, { $push: { projects: newProject._id }});
 
+    if (!foundPortfolio) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
 
-    res.status(200).json({ newProject, message: 'Nice work on adding a new project!'})
+    const newProject = await Project.create({ title, shortDesc, description, imgUrl, techsUsed, portfolio: foundPortfolio._id });
 
-  }catch(error){
-    console.log(error)
-    res.status(500).json({ message: "Ooops, something went wrong!"})
+    if (!newProject) {
+      return res.status(500).json({ message: 'Failed to create project' });
+    }
+
+    const updatedPortfolio = await Portfolio.findOneAndUpdate(
+      { uniqueIdentifier: uniqueIdentifier },
+      { $push: { projects: newProject._id }},
+      { new: true }
+    );
+
+    if (!updatedPortfolio) {
+      return res.status(500).json({ message: 'Failed to update portfolio' });
+    }
+
+    res.status(200).json({ newProject, message: 'Nice work on adding a new project!' });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Oops, something went wrong!' });
   }
 });
 
+
+
 // GET projects from a portfolio --GET-- /api/portfolios/:uniqueIdentifier/projects
+// router.get('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
+//   const { uniqueIdentifier } = req.params;
+//   const { limit, offset } = req.query;
+
+//   const limitValue = parseInt(limit) || 6;
+//   const offsetValue = parseInt(offset) || 0;
+
+//   Portfolio.findOne({ uniqueIdentifier })
+//     .populate({
+//       path: 'projects',
+//       select: '-__v',
+//       options: {
+//         limit: limitValue,
+//         skip: offsetValue
+//       }
+//     })
+//     .select('projects')
+//     .then(portfolio => {
+//       if (!portfolio) {
+//         return res.status(404).json({ message: 'Portfolio not found' });
+//       }
+
+//       const totalCount = portfolio.projects.length;
+//       const totalPages = Math.ceil(totalCount / limitValue);
+
+//       res.status(200).json({ projects: portfolio.projects, totalPages });
+//     })
+//     .catch(error => {
+//       console.log(error);
+//       res.status(500).json({ message: 'Oops, something went wrong!' });
+//     });
+// });
 router.get('/portfolios/:uniqueIdentifier/projects', (req, res, next) => {
 
   const { uniqueIdentifier } = req.params;

@@ -53,9 +53,9 @@ const portfolioSchema = new Schema({
   // }]
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
-  education: [{ type: Schema.Types.ObjectId, ref: 'Education' }]
+  educations: [{ type: Schema.Types.ObjectId, ref: 'Education' }]
 }, {
   timestamps: true
 });
 
-module.exports = model("Portfolio", portfolioSchema);
+module.exports = model("Education", portfolioSchema);
