@@ -84,6 +84,41 @@ router.get('/portfolios/:uniqueIdentifier/educations', (req, res, next) => {
 })
 
 
+router.put('/portfolios/:uniqueIdentifier/educations/:educationId', async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, educationId } = req.params;
+  // Extract the fields to be updated from the request body
+  const { schoolName, beginDate, endDate, program, educationType, earnedCert } = req.body;
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('educations')
+    if(!portfolio){
+      return res.status(404).json({ message: 'Portfolio not found!'});
+    };
+
+    const educationToUpdate = portfolio.educations.find(education => education._id.toString() === educationId);
+
+    if(!educationToUpdate){
+      res.status(404).json({ message: 'Education was not found in your portfolio'})
+    }
+
+    educationToUpdate.schoolName = schoolName;
+    educationToUpdate.beginDate = beginDate;
+    educationToUpdate.endDate = endDate;
+    educationToUpdate.educationType = educationType;
+    educationToUpdate.program = program;
+    educationToUpdate.earnedCert = earnedCert;
+    // projectToUpdate.portfolio = portfolio._id;
+    await educationToUpdate.save()
+    // const projectToUpdate = await portfolio.projects
+
+    res.status(200).json(educationToUpdate);
+
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message: "Ooops something happened!"})
+  }
+});
+
+
 
 
 
