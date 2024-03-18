@@ -84,6 +84,31 @@ router.get('/portfolios/:uniqueIdentifier/educations', (req, res, next) => {
 })
 
 
+
+router.get('/portfolios/:uniqueIdentifier/educations/:educationId', (req, res, next) => {
+  const { uniqueIdentifier, educationId } = req.params;
+
+  Portfolio.findOne({ uniqueIdentifier })
+    .populate({
+      path: 'educations',
+      // Filter projects by the provided project ID
+      match: { _id: educationId },
+      // Exclude __v fields from the populated project
+      select: '-__v'
+    })
+    // Select only the projects field from the Portfolio object
+    .select('educations')
+    .then(portfolio => {
+      if (!portfolio || !portfolio.educations || portfolio.educations.length === 0) {
+        return res.status(404).json({ message: 'Education not found' });
+      }
+      // Return the first (and only) project in the arrays
+      res.status(200).json(portfolio.educations[0]);
+    })
+    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
+});
+
+
 router.put('/portfolios/:uniqueIdentifier/educations/:educationId', isAuthenticated, async (req, res, next) => {
   try {
     const { uniqueIdentifier, educationId } = req.params;
