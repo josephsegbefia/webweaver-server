@@ -30,9 +30,9 @@ router.post('/portfolios', async (req, res, next) => {
     const userEmail = portfolioUser.email;
 
 
-    const name = userFirstName.toLowerCase();
-    const surname = userLastName.toLowerCase();
-    let hex = crypto.randomBytes(64).toString("hex").slice(0, 6)
+    const name = userFirstName.toLowerCase().trim();
+    const surname = userLastName.toLowerCase().trim();
+    let hex = crypto.randomBytes(64).toString("hex").slice(0, 6).trim()
     let uniqueIdentifier = `${name}-${surname}-${hex}`;
 
     // Check if a portfolio with the same uniqueIdentifier exists

@@ -44,6 +44,47 @@ router.post('/portfolios/:uniqueIdentifier/educations', async (req, res, next) =
 });
 
 
+router.get('/portfolios/:uniqueIdentifier/educations', (req, res, next) => {
+
+  const { uniqueIdentifier } = req.params;
+  const { limit, offset } = req.query;
+
+  const limitValue = parseInt(limit) || 3;
+  const offsetValue = parseInt(offset) || 0;
+
+  Portfolio.findOne({ uniqueIdentifier })
+    .populate('educations', '-__v')
+    .select('educations')
+    .then(portfolio => {
+      if (!portfolio) {
+        return res.status(404).json({ message: 'Portfolio not found' });
+      }
+
+      const totalCount = portfolio.educations.length;
+
+      const totalPages = Math.ceil(totalCount / limitValue);
+
+
+      Portfolio.findOne({ uniqueIdentifier })
+        .populate({
+          path: 'educations',
+          select: '-__v',
+          options: {
+            limit: limitValue,
+            skip: offsetValue
+          }
+        })
+        .select('educations')
+        .then(paginatedPortfolio => {
+          res.status(200).json({ educations: paginatedPortfolio.educations, totalPages });
+        })
+        .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
+    })
+    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
+})
+
+
+
 
 
 

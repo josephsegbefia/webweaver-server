@@ -5,7 +5,7 @@ const { isURL, isEmail } = require("validator");
 
 const educationSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User'},
-  description: { type: String, required: true },
+  // description: { type: String, required: true },
   schoolName: { type: String, required: true },
   program: { type: String, required: true },
   beginDate: { type: String, required: true },
