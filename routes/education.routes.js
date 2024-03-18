@@ -84,7 +84,7 @@ router.get('/portfolios/:uniqueIdentifier/educations', (req, res, next) => {
 })
 
 
-router.put('/portfolios/:uniqueIdentifier/educations/:educationId', async (req, res, next) => {
+router.put('/portfolios/:uniqueIdentifier/educations/:educationId', isAuthenticated, async (req, res, next) => {
   try {
     const { uniqueIdentifier, educationId } = req.params;
   // Extract the fields to be updated from the request body
@@ -115,6 +115,43 @@ router.put('/portfolios/:uniqueIdentifier/educations/:educationId', async (req, 
   }catch(error){
     console.log(error);
     res.status(500).json({message: "Ooops something happened!"})
+  }
+});
+
+
+router.delete('/portfolios/:uniqueIdentifier/educations/:educationId', isAuthenticated, async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, educationId } = req.params;
+
+    // Find the portfolio based on the unique identifier
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier }).populate('educations');
+
+    // Check if the portfolio exists
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found!' });
+    }
+
+    // Find the index of the education within the portfolio's projects array
+    const educationIndex = portfolio.educations.findIndex(education => education._id.toString() === educationId);
+
+    // Check if the education exists in the portfolio
+    if (educationIndex === -1) {
+      return res.status(404).json({ message: 'Project not found in your portfolio' });
+    }
+
+    // Remove the education from the projects array
+    portfolio.educations.splice(projectIndex, 1);
+
+    // Save the updated portfolio without the deleted project
+    await portfolio.save();
+
+    // Delete the project from the database
+    await Education.findByIdAndDelete(projectId);
+
+    res.status(200).json({ message: 'Education deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Oops! Something went wrong.' });
   }
 });
 
