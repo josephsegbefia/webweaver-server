@@ -58,4 +58,4 @@ const portfolioSchema = new Schema({
   timestamps: true
 });
 
-module.exports = model("Education", portfolioSchema);
+module.exports = model("Portfolio", portfolioSchema);
