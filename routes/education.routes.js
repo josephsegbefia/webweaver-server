@@ -165,13 +165,13 @@ router.delete('/portfolios/:uniqueIdentifier/educations/:educationId', isAuthent
     }
 
     // Remove the education from the projects array
-    portfolio.educations.splice(projectIndex, 1);
+    portfolio.educations.splice(educationIndex, 1);
 
     // Save the updated portfolio without the deleted project
     await portfolio.save();
 
     // Delete the project from the database
-    await Education.findByIdAndDelete(projectId);
+    await Education.findByIdAndDelete(educationId);
 
     res.status(200).json({ message: 'Education deleted successfully' });
   } catch (error) {
