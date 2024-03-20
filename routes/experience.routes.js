@@ -10,7 +10,7 @@ const Portfolio = require('../models/Portfolio.model');
 
 router.post('/portfolios/:uniqueIdentifier/experiences', isAuthenticated, async (req, res, next) => {
   try {
-    const { company, startDate, endDate, position, responsibilities } = req.body;
+    const { company, startDate, endDate, position, responsibilities, location } = req.body;
     const { uniqueIdentifier } = req.params;
 
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
@@ -19,7 +19,7 @@ router.post('/portfolios/:uniqueIdentifier/experiences', isAuthenticated, async 
       return res.status(404).json({ message: 'Portfolio not found' });
     }
 
-    const newExperience = await Experience.create({ company, startDate, endDate, position, responsibilities, portfolio: foundPortfolio._id });
+    const newExperience = await Experience.create({ company, startDate, endDate, position, responsibilities, location, portfolio: foundPortfolio._id });
 
     if (!newExperience) {
       return res.status(500).json({ message: 'Failed to create experience' });
@@ -113,7 +113,7 @@ router.put('/portfolios/:uniqueIdentifier/experiences/:experienceId', isAuthenti
   try {
     const { uniqueIdentifier, experienceId } = req.params;
   // Extract the fields to be updated from the request body
-    const { company, startDate, endDate, position, responsibilities } = req.body;
+    const { company, startDate, endDate, position, responsibilities, location } = req.body;
     const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('experiences')
     if(!portfolio){
       return res.status(404).json({ message: 'Portfolio not found!'});

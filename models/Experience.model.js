@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 
 const experienceSchema = new Schema({
   company: { type: String, required: true},
+  location: {type: String, required: true},
   startDate: {type: String, required: true},
   endDate: {type: String, required: true},
   position: {type: String, required: true},
