@@ -8,7 +8,7 @@ const Education = require('../models/Education.model');
 const Portfolio = require('../models/Portfolio.model');
 
 
-router.post('/portfolios/:uniqueIdentifier/educations', async (req, res, next) => {
+router.post('/portfolios/:uniqueIdentifier/educations', isAuthenticated, async (req, res, next) => {
   try {
     const { schoolName, beginDate, endDate, program, educationType, earnedCert } = req.body;
     const { uniqueIdentifier } = req.params;
