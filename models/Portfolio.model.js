@@ -51,6 +51,7 @@ const portfolioSchema = new Schema({
   //   issuer: { type: String },
   //   issueDate: { type: Date }
   // }]
+  experiences: [{type: Schema.Types.ObjectId, ref: 'Experience'}],
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   educations: [{ type: Schema.Types.ObjectId, ref: 'Education' }]
