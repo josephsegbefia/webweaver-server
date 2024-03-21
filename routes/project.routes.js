@@ -10,7 +10,7 @@ const Portfolio = require('../models/Portfolio.model');
 
 router.post('/portfolios/:uniqueIdentifier/projects', isAuthenticated, async (req, res, next) => {
   try {
-    const { title, description, imgUrl, shortDesc, techsUsed } = req.body;
+    const { title, description, imgUrl, shortDesc, techsUsed, liveLink, gitHubLink } = req.body;
     const { uniqueIdentifier } = req.params;
 
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
@@ -19,7 +19,7 @@ router.post('/portfolios/:uniqueIdentifier/projects', isAuthenticated, async (re
       return res.status(404).json({ message: 'Portfolio not found' });
     }
 
-    const newProject = await Project.create({ title, shortDesc, description, imgUrl, techsUsed, portfolio: foundPortfolio._id });
+    const newProject = await Project.create({ title, shortDesc, description, imgUrl, techsUsed, liveLink, gitHubLink, portfolio: foundPortfolio._id });
 
     if (!newProject) {
       return res.status(500).json({ message: 'Failed to create project' });
@@ -146,7 +146,7 @@ router.put('/portfolios/:uniqueIdentifier/projects/:projectId', isAuthenticated,
   try {
     const { uniqueIdentifier, projectId } = req.params;
   // Extract the fields to be updated from the request body
-    const { title, shortDesc, techsUsed, description, imgUrl } = req.body;
+    const { title, shortDesc, techsUsed, description, imgUrl, liveLink, gitHubLink } = req.body;
     const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('projects')
     if(!portfolio){
       return res.status(404).json({ message: 'Portfolio not found!'});
@@ -163,6 +163,8 @@ router.put('/portfolios/:uniqueIdentifier/projects/:projectId', isAuthenticated,
     projectToUpdate.description = description;
     projectToUpdate.imgUrl = imgUrl;
     projectToUpdate.techsUsed = techsUsed;
+    projectToUpdate.liveLink = liveLink;
+    projectToUpdate.gitHubLink = gitHubLink;
     // projectToUpdate.portfolio = portfolio._id;
     await projectToUpdate.save()
     // const projectToUpdate = await portfolio.projects
