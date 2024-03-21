@@ -9,7 +9,7 @@ const router = express.Router();
 // Create a message --POST-- /api/portfolios/:uniqueIdentifier/messages
 router.post('/portfolios/:uniqueIdentifier/messages', async (req, res, next) => {
   try {
-    const { senderName, senderEmail, content } = req.body;
+    const { senderName, subject, senderEmail, content } = req.body;
     const { uniqueIdentifier } = req.params;
 
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier });

@@ -14,7 +14,8 @@ function emailSchema(opts = {}) {
 }
 
 const messageSchema = new Schema({
-  senderName: { type: String },
+  senderName: { type: String, required: true },
+  subject: {type: String, required: true},
   senderEmail: emailSchema(),
   content: { type: String },
   read: {type: Boolean, default: false },
