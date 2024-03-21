@@ -1,6 +1,8 @@
 const express = require('express');
 const Portfolio = require('../models/Portfolio.model');
 const Message = require('../models/Message.model');
+const User = require('../models/User.model');
+const { sendMessageNotificationMail } = require('../config/sendMessageNotificationMail');
 const mongoose = require('mongoose');
 
 const router = express.Router();
@@ -12,11 +14,14 @@ router.post('/portfolios/:uniqueIdentifier/messages', async (req, res, next) => 
     const { senderName, subject, senderEmail, content } = req.body;
     const { uniqueIdentifier } = req.params;
 
+    const user = await User.findOne({ uniqueIdentifier });
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier });
-    const newMessage = await Message.create({ senderName, senderEmail, content, portfolio: foundPortfolio._id });
+    const newMessage = await Message.create({ senderName, senderEmail, subject, content, portfolio: foundPortfolio._id });
     const updatedPortfolio = await Portfolio.findOneAndUpdate({ uniqueIdentifier: uniqueIdentifier}, {
       $push: { messages: newMessage._id}
     });
+
+    sendMessageNotificationMail(user, senderName, senderEmail, subject, content);
 
     res.status(200).json({ newMessage, message: 'Thank you for reaching out' });
 
