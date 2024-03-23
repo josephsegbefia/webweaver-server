@@ -57,7 +57,8 @@ const portfolioSchema = new Schema({
   experiences: [{type: Schema.Types.ObjectId, ref: 'Experience'}],
   projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
   messages: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
-  educations: [{ type: Schema.Types.ObjectId, ref: 'Education' }]
+  educations: [{ type: Schema.Types.ObjectId, ref: 'Education' }],
+  jobs: [{ type: Schema.Types.ObjectId, ref: 'Job'}]
 }, {
   timestamps: true
 });
