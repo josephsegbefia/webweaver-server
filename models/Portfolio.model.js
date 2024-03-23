@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 const { isURL, isEmail } = require("validator");
 
-function urlSchema(opts = {}) {
+function urlSchemaNotRequired(opts = {}) {
   const { required } = opts;
 
   return {
     type: String,
-    required: !!required,
+    // required: !!required,
+    required: false,
     validate: {
       validator: isURL,
       message: (props) => `$(props.value) is not a valid URL`
@@ -15,11 +16,13 @@ function urlSchema(opts = {}) {
   };
 }
 
+
 function emailSchema(opts = {}) {
   const { required } = opts;
   return {
     type: String,
     required: !!required,
+    required: false,
     validate: {
       validator: isEmail,
       message: (props) => `${props.value} is not a valid email address`
@@ -39,8 +42,8 @@ const portfolioSchema = new Schema({
   avatarURL: { type: String },
   skills: [String],
   languages: [String],
-  linkedInURL: urlSchema(),
-  gitHubURL: urlSchema(),
+  linkedInURL: urlSchemaNotRequired(),
+  gitHubURL: urlSchemaNotRequired(),
   uniqueIdentifier: { type: String},
   interests: [String],
   // To be added later

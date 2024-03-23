@@ -34,7 +34,7 @@ const projectSchema = new Schema({
   description: String,
   imgUrl: String,
   liveLink: urlSchemaNotRequired(),
-  gitHubLink: urlSchema(),
+  gitHubLink: urlSchemaNotRequired(),
   portfolio: { type: Schema.Types.ObjectId, ref: 'Portfolio' }
 },
 {
