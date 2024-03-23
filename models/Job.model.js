@@ -9,9 +9,11 @@ const jobSchema = new Schema({
   appliedDate: { type: String, required: true },
   status: { type: String, enum: ["Not applied", "Withdrew application", "Applied", "Initial Call", "Interviewing", "Landed", "Rejected"],
   cv: { type: String },
-  coverLetter: { type: String }
+  coverLetter: { type: String },
+  otherDocs: [String],
 }
-
+}, {
+  timestamps: true
 })
 
 module.exports = model("Job", jobSchema);
