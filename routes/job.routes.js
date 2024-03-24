@@ -9,7 +9,7 @@ const Portfolio = require("../models/Portfolio.model");
 
 router.post('/portfolios/:uniqueIdentifier/jobs', isAuthenticated, async (req, res, next) => {
   try {
-    const { companyName, position, description, appliedDate, status, cv, coverLetter, otherDocs } = req.body;
+    const { companyName, position, description, jobLocation, appliedDate, status, cv, coverLetter, otherDocs } = req.body;
     const { uniqueIdentifier } = req.params;
 
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
@@ -18,7 +18,7 @@ router.post('/portfolios/:uniqueIdentifier/jobs', isAuthenticated, async (req, r
       return res.status(404).json({ message: 'Portfolio not found' });
     }
 
-    const newJob = await Job.create({ companyName, position, description, appliedDate, status, cv, coverLetter, otherDocs, portfolio: foundPortfolio._id });
+    const newJob = await Job.create({ companyName, position, description, jobLocation, appliedDate, status, cv, coverLetter, otherDocs, portfolio: foundPortfolio._id });
 
     if (!newJob) {
       return res.status(500).json({ message: 'Failed to create job tracking' });
@@ -41,5 +41,45 @@ router.post('/portfolios/:uniqueIdentifier/jobs', isAuthenticated, async (req, r
     res.status(500).json({ message: 'Oops, something went wrong!' });
   }
 });
+
+router.get('/portfolios/:uniqueIdentifier/jobs', (req, res, next) => {
+
+  const { uniqueIdentifier } = req.params;
+  const { limit, offset } = req.query;
+
+  const limitValue = parseInt(limit) || 10;
+  const offsetValue = parseInt(offset) || 0;
+
+  Portfolio.findOne({ uniqueIdentifier })
+    .populate('jobs', '-__v')
+    .select('jobs')
+    .then(portfolio => {
+      if (!portfolio) {
+        return res.status(404).json({ message: 'Portfolio not found' });
+      }
+
+      const totalCount = portfolio.jobs.length;
+
+      const totalPages = Math.ceil(totalCount / limitValue);
+
+
+      Portfolio.findOne({ uniqueIdentifier })
+        .populate({
+          path: 'jobs',
+          select: '-__v',
+          options: {
+            limit: limitValue,
+            skip: offsetValue
+          }
+        })
+        .select('jobs')
+        .then(paginatedPortfolio => {
+          res.status(200).json({ jobs: paginatedPortfolio.jobs, totalPages });
+        })
+        .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
+    })
+    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
+})
+
 
 module.exports = router;
