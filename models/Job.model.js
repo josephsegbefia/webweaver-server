@@ -8,7 +8,7 @@ const jobSchema = new Schema({
   jobDescription: { type: String, required: true },
   appliedDate: { type: String, required: true },
   jobLocation: { type: String },
-  status: { type: String, enum: ["Not applied", "Withdrew application", "Applied", "Initial Call", "Interviewing", "Landed", "Rejected", "No contact"],
+  status: { type: String, enum: ["Not applied", "Application withdrawn", "Applied", "Initial Call", "Interviewing", "Landed", "Rejected", "No contact"],
   cv: { type: String },
   coverLetter: { type: String },
   otherDocs: [String],
