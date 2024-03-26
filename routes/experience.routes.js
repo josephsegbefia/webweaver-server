@@ -170,7 +170,7 @@ router.delete('/portfolios/:uniqueIdentifier/experiences/:experienceId', isAuthe
     await portfolio.save();
 
     // Delete the project from the database
-    await Experience.findByIdAndDelete(educationId);
+    await Experience.findByIdAndDelete(experienceId);
 
     res.status(200).json({ message: 'Experience deleted successfully' });
   } catch (error) {
