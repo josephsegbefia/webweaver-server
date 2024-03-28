@@ -5,7 +5,45 @@ const { isAuthenticated } = require('../middleware/jwt.middleware');
 const router = require('express').Router();
 const Job = require("../models/Job.model");
 const Portfolio = require("../models/Portfolio.model");
+const fileUploader = require('../config/cloudinary.config');
 
+
+// JOB FILES UPLOAD OTHER DOCS
+
+router.post('/supporting-documents/upload', fileUploader.array('otherDocs', 3), (req, res, next) => {
+
+  if (!req.files || req.files.length === 0) {
+    next(new Error('No files uploaded'));
+    return;
+  }
+
+  const fileUrls = req.files.map(file => file.path);
+  res.json({ fileUrls });
+})
+
+// UPLOAD OF CV
+router.post('/resume/upload', fileUploader.single('cv'), (req, res, next) => {
+  console.log("File is==>", req.file);
+
+  if(!req.file){
+    next(new Error('No file uploaded'));
+    return;
+  }
+
+  // UPLOAD OF COVER LETTER
+  router.post('/coverletter/upload', fileUploader.single('coverLetter'), (req, res, next) => {
+    console.log("File is==>", req.file);
+
+    if(!req.file){
+      next(new Error('No file uploaded'));
+      return;
+    }
+
+    res.json({ fileUrl: req.file.path })
+  })
+
+  res.json({ fileUrl: req.file.path })
+})
 
 router.post('/portfolios/:uniqueIdentifier/jobs', isAuthenticated, async (req, res, next) => {
   try {

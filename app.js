@@ -40,6 +40,9 @@ app.use('/api', messageRouter);
 
 const dashboardRouter = require('./routes/dashboard.routes');
 app.use('/api', dashboardRouter);
+
+const jobRouter = require('./routes/job.routes');
+app.use('/api', jobRouter)
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
