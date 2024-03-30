@@ -18,6 +18,7 @@ router.post('/supporting-documents/upload', fileUploader.array('otherDocs', 3), 
   }
 
   const fileUrls = req.files.map(file => file.path);
+  console.log(fileUrls);
   res.json({ fileUrls });
 })
 
@@ -45,9 +46,12 @@ router.post('/resume/upload', fileUploader.single('cv'), (req, res, next) => {
   res.json({ fileUrl: req.file.path })
 })
 
+
+// BEGINNING OF ROUTES
+
 router.post('/portfolios/:uniqueIdentifier/jobs', isAuthenticated, async (req, res, next) => {
   try {
-    const { companyName, position, description, jobLocation, appliedDate, status, cv, coverLetter, otherDocs } = req.body;
+    const { companyName, position, jobDescription, jobLocation, appliedDate, status, cv, coverLetter, otherDocs } = req.body;
     const { uniqueIdentifier } = req.params;
 
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
@@ -56,7 +60,7 @@ router.post('/portfolios/:uniqueIdentifier/jobs', isAuthenticated, async (req, r
       return res.status(404).json({ message: 'Portfolio not found' });
     }
 
-    const newJob = await Job.create({ companyName, position, description, jobLocation, appliedDate, status, cv, coverLetter, otherDocs, portfolio: foundPortfolio._id });
+    const newJob = await Job.create({ companyName, position, jobDescription, jobLocation, appliedDate, status, cv, coverLetter, otherDocs, portfolio: foundPortfolio._id });
 
     if (!newJob) {
       return res.status(500).json({ message: 'Failed to create job tracking' });
