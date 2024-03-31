@@ -148,40 +148,42 @@ router.get('/portfolios/:uniqueIdentifier/jobs/:jobId', (req, res, next) => {
 });
 
 
-// router.put('/portfolios/:uniqueIdentifier/projects/:projectId', isAuthenticated, async (req, res, next) => {
-//   try {
-//     const { uniqueIdentifier, projectId } = req.params;
-//   // Extract the fields to be updated from the request body
-//     const { title, shortDesc, techsUsed, description, imgUrl, liveLink, gitHubLink } = req.body;
-//     const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('projects')
-//     if(!portfolio){
-//       return res.status(404).json({ message: 'Portfolio not found!'});
-//     };
+router.put('/portfolios/:uniqueIdentifier/jobs/:jobId', isAuthenticated, async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, jobId } = req.params;
+  // Extract the fields to be updated from the request body
+    const { companyName, position, jobDescription, jobLocation, appliedDate, status, cv, coverLetter, otherDocs } = req.body;
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('jobs')
+    if(!portfolio){
+      return res.status(404).json({ message: 'Portfolio not found!'});
+    };
 
-//     const projectToUpdate = portfolio.projects.find(project => project._id.toString() === projectId);
+    const jobToUpdate = portfolio.jobs.find(job => job._id.toString() === jobId);
 
-//     if(!projectToUpdate){
-//       res.status(404).json({ message: 'Project was not found in your portfolio'})
-//     }
+    if(!jobToUpdate){
+      res.status(404).json({ message: 'Job was not found in your portfolio'})
+    }
 
-//     projectToUpdate.title = title;
-//     projectToUpdate.shortDesc = shortDesc;
-//     projectToUpdate.description = description;
-//     projectToUpdate.imgUrl = imgUrl;
-//     projectToUpdate.techsUsed = techsUsed;
-//     projectToUpdate.liveLink = liveLink;
-//     projectToUpdate.gitHubLink = gitHubLink;
-//     // projectToUpdate.portfolio = portfolio._id;
-//     await projectToUpdate.save()
-//     // const projectToUpdate = await portfolio.projects
+    jobToUpdate.companyName = companyName;
+    jobToUpdate.position = position;
+    jobToUpdate.jobDescription = jobDescription;
+    jobToUpdate.jobLocation = jobLocation;
+    jobToUpdate.appliedDate = appliedDate;
+    jobToUpdate.status = status;
+    jobToUpdate.cv = cv;
+    jobToUpdate.coverLetter = coverLetter;
+    jobToUpdate.otherDocs = otherDocs;
+    // projectToUpdate.portfolio = portfolio._id;
+    await jobToUpdate.save()
+    // const projectToUpdate = await portfolio.projects
 
-//     res.status(200).json(projectToUpdate);
+    res.status(200).json(jobToUpdate);
 
-//   }catch(error){
-//     console.log(error);
-//     res.status(500).json({message: "Ooops something happened!"})
-//   }
-// });
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message: "Ooops something happened!"})
+  }
+});
 
 
 
