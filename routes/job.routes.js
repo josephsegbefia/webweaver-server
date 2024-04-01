@@ -177,7 +177,7 @@ router.put('/portfolios/:uniqueIdentifier/jobs/:jobId', isAuthenticated, async (
     await jobToUpdate.save()
     // const projectToUpdate = await portfolio.projects
 
-    res.status(200).json(jobToUpdate);
+    res.status(200).json({message: "Updated successfully", updatedJob: jobToUpdate});
 
   }catch(error){
     console.log(error);
@@ -187,41 +187,41 @@ router.put('/portfolios/:uniqueIdentifier/jobs/:jobId', isAuthenticated, async (
 
 
 
-// router.delete('/portfolios/:uniqueIdentifier/projects/:projectId', isAuthenticated, async (req, res, next) => {
-//   try {
-//     const { uniqueIdentifier, projectId } = req.params;
+router.delete('/portfolios/:uniqueIdentifier/jobs/:jobId', isAuthenticated, async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, jobId } = req.params;
 
-//     // Find the portfolio based on the unique identifier
-//     const portfolio = await Portfolio.findOne({ uniqueIdentifier }).populate('projects');
+    // Find the portfolio based on the unique identifier
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier }).populate('jobs');
 
-//     // Check if the portfolio exists
-//     if (!portfolio) {
-//       return res.status(404).json({ message: 'Portfolio not found!' });
-//     }
+    // Check if the portfolio exists
+    if (!portfolio) {
+      return res.status(404).json({ message: 'Portfolio not found!' });
+    }
 
-//     // Find the index of the project within the portfolio's projects array
-//     const projectIndex = portfolio.projects.findIndex(project => project._id.toString() === projectId);
+    // Find the index of the project within the portfolio's projects array
+    const jobIndex = portfolio.jobs.findIndex(job => job._id.toString() === jobId);
 
-//     // Check if the project exists in the portfolio
-//     if (projectIndex === -1) {
-//       return res.status(404).json({ message: 'Project not found in your portfolio' });
-//     }
+    // Check if the project exists in the portfolio
+    if (jobIndex === -1) {
+      return res.status(404).json({ message: 'Job not found in your portfolio' });
+    }
 
-//     // Remove the project from the projects array
-//     portfolio.projects.splice(projectIndex, 1);
+    // Remove the project from the projects array
+    portfolio.jobs.splice(jobIndex, 1);
 
-//     // Save the updated portfolio without the deleted project
-//     await portfolio.save();
+    // Save the updated portfolio without the deleted project
+    await portfolio.save();
 
-//     // Delete the project from the database
-//     await Project.findByIdAndDelete(projectId);
+    // Delete the project from the database
+    await Job.findByIdAndDelete(jobId);
 
-//     res.status(200).json({ message: 'Project deleted successfully' });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).json({ message: 'Oops! Something went wrong.' });
-//   }
-// });
+    res.status(200).json({ message: 'Job deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Oops! Something went wrong.' });
+  }
+});
 
 
 
