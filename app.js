@@ -43,6 +43,9 @@ app.use('/api', dashboardRouter);
 
 const jobRouter = require('./routes/job.routes');
 app.use('/api', jobRouter)
+
+const aiRouter = require('./routes/aiassistant.routes');
+app.use('/api', aiRouter);
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 
