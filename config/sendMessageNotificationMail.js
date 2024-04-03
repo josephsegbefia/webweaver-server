@@ -4,7 +4,7 @@ const sendMessageNotificationMail = (user, senderName, senderEmail, subject, con
   const transporter = createMailTransporter();
 
   const mailOptions = {
-    from: '"WebWeaver" <joeelorm@outlook.com>',
+    from: '"WebWeavrr" <webweavrr@outlook.com>',
     to: user.email,
     html: `<p>
               Hello, ${user.firstName}, you have received a new message from someone who visited your portfolio.

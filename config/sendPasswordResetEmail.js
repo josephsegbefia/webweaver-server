@@ -4,11 +4,11 @@ const sendPasswordResetEmail = (user) => {
   const transporter = createMailTransporter();
 
   const mailOptions = {
-    from: '"WebWeaver" <joeelorm@outlook.com>',
+    from: '"WebWeavrr" <webweavrr@outlook.com>',
     to: user.email,
     html: `<p>
             Hello 👋 ${user.firstName}, click the link to reset your password
-            <a href = http://127.0.0.1:5173/password-reset?passwordResetToken=${user.passwordResetToken}>Reset Password</a>
+            <a href = https://webweavrr.com/password-reset?passwordResetToken=${user.passwordResetToken}>Reset Password</a>
          </p>`
   };
 
