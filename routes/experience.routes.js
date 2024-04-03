@@ -19,7 +19,8 @@ router.post('/portfolios/:uniqueIdentifier/experiences', isAuthenticated, async 
       return res.status(404).json({ message: 'Portfolio not found' });
     }
 
-    const newExperience = await Experience.create({ company, startDate, endDate, position, responsibilities, location, currentPosition, portfolio: foundPortfolio._id });
+    const newExperience = await Experience.create({ company, startDate, endDate, position, responsibilities, location, currentPosition,
+      portfolio: foundPortfolio._id });
 
     if (!newExperience) {
       return res.status(500).json({ message: 'Failed to create experience' });
@@ -130,6 +131,8 @@ router.put('/portfolios/:uniqueIdentifier/experiences/:experienceId', isAuthenti
     experienceToUpdate.endDate = endDate;
     experienceToUpdate.position = position;
     experienceToUpdate.responsibilities = responsibilities;
+    experienceToUpdate.location = location;
+    experienceToUpdate.currentPosition = currentPosition;
     // projectToUpdate.portfolio = portfolio._id;
     await experienceToUpdate.save()
     // const projectToUpdate = await portfolio.projects

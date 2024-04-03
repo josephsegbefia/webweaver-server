@@ -15,7 +15,8 @@ router.post('/portfolios/:uniqueIdentifier/messages', async (req, res, next) => 
     const { uniqueIdentifier } = req.params;
 
     const user = await User.findOne({ uniqueIdentifier });
-    const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier });
+    const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
+
     const newMessage = await Message.create({ senderName, senderEmail, subject, content, portfolio: foundPortfolio._id });
     const updatedPortfolio = await Portfolio.findOneAndUpdate({ uniqueIdentifier: uniqueIdentifier}, {
       $push: { messages: newMessage._id}

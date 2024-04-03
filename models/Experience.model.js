@@ -9,7 +9,7 @@ const experienceSchema = new Schema({
   endDate: {type: String},
   position: {type: String, required: true},
   responsibilities: {type: String, required: true},
-  currentPosition: {type: Boolean, default: false},
+  // currentPosition: { type: Boolean },
   portfolio: { type: Schema.Types.ObjectId, ref: 'Portfolio' }
 },
 {
