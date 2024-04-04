@@ -4,7 +4,7 @@ const sendVerificationMail = (user) => {
   const transporter = createMailTransporter();
 
   const mailOptions = {
-    from: '"WebWeavrr" <webweavrr@outlook.com>',
+    from: '"WebWeavrr" <${process.env.EMAIL_ADDRESS}',
     to: user.email,
     html: `<p>
               Hello, ${user.firstName}, thank you for signing up to use our services. Please click on the link
