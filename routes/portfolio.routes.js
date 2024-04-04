@@ -23,18 +23,17 @@ router.post('/image-upload', fileUploader.single('imgUrl'), (req, res, next) => 
 // Create a portfolio  -- POST -- /api/portfolios
 router.post('/portfolios', async (req, res, next) => {
   try {
-    const { user, headLine, phone, avatarURL, linkedInURL, gitHubURL, bio, location } = req.body;
+    const { user, headLine, phone, avatarURL, skills, linkedInURL, gitHubURL } = req.body;
     const portfolioUser = await User.findById(user);
     const userLastName = portfolioUser.lastName;
     const userFirstName = portfolioUser.firstName;
     const userEmail = portfolioUser.email;
-
-
-    const name = userFirstName.toLowerCase().trim();
-    const surname = userLastName.toLowerCase().trim();
-    let hex = crypto.randomBytes(64).toString("hex").slice(0, 6).trim()
+    const name = userFirstName.toLowerCase();
+    const surname = userLastName.toLowerCase();
+    let hex = crypto.randomBytes(64).toString("hex").slice(0, 6)
     let uniqueIdentifier = `${name}-${surname}-${hex}`;
-
+    console.log("Port User===>", portfolioUser);
+    console.log("UNIQUEID===>", uniqueIdentifier);
     // Check if a portfolio with the same uniqueIdentifier exists
     const portfolio = await Portfolio.findOne({ uniqueIdentifier });
     if (portfolio){
@@ -43,33 +42,22 @@ router.post('/portfolios', async (req, res, next) => {
       uniqueIdentifier = `${name}-${surname}-${hex}`;
       return;
     }
-
-    // portfolioUser.uniqueIdentifier = uniqueIdentifier;
-    // await portfolioUser.save();
-
     const createdPortfolio = await Portfolio.create({
       user: user,
       lastName: userLastName,
       firstName: userFirstName,
       email: userEmail,
-      bio,
-      location,
       headLine,
       phone,
       avatarURL,
-      skills: [],
+      skills,
       linkedInURL,
       gitHubURL,
       uniqueIdentifier: uniqueIdentifier,
-      projects: [],
-      messages: [],
-      languages:[],
+      projects: []
     });
-
     console.log(createdPortfolio._id);
-
     const updatedUser = await User.findByIdAndUpdate(user, { portfolio: createdPortfolio._id, uniqueIdentifier: uniqueIdentifier }, { new: true });
-
     res.status(200).json(createdPortfolio);
   } catch (error) {
     console.error(error);

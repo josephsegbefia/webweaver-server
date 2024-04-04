@@ -4,7 +4,7 @@ const sendPasswordResetEmail = (user) => {
   const transporter = createMailTransporter();
 
   const mailOptions = {
-    from: '"WebWeavrr" <webweavrr@outlook.com>',
+    from: `"WebWeavrr " <${process.env.EMAIL_ADDRESS}>`,
     to: user.email,
     html: `<p>
             Hello 👋 ${user.firstName}, click the link to reset your password
@@ -16,7 +16,7 @@ const sendPasswordResetEmail = (user) => {
     if (error) {
       console.log(error);
     } else {
-      console.log("Verification sent");
+      console.log("Email sent");
     }
   });
 };

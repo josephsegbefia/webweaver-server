@@ -4,7 +4,7 @@ const sendMessageNotificationMail = (user, senderName, senderEmail, subject, con
   const transporter = createMailTransporter();
 
   const mailOptions = {
-    from: '"WebWeavrr" <webweavrr@outlook.com>',
+    from: `"WebWeavrr " <${process.env.EMAIL_ADDRESS}>`,
     to: user.email,
     html: `<p>
               Hello, ${user.firstName}, you have received a new message from someone who visited your portfolio.
@@ -20,7 +20,7 @@ const sendMessageNotificationMail = (user, senderName, senderEmail, subject, con
     if(error){
       console.log(error);
     }else {
-      console.log('Verification sent');
+      console.log('Email sent');
     }
   })
 }
