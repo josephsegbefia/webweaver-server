@@ -35,6 +35,7 @@ const userSchema = new Schema({
   // Try this
   uniqueIdentifier: {type: String, default: null },
   isVerified: { type: Boolean, default: false },
+  isAdmin: {type: Boolean, default: false},
   portfolio: { type: Schema.Types.ObjectId, ref: 'Portfolio' }
 });
 
