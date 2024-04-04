@@ -1,11 +1,13 @@
 const express = require("express");
 const User = require("../models/User.model");
 const Portfolio = require('../models/Portfolio.model');
+const Project = require('../models/Project.model');
+const Experience = require('../models/Experience.model');
+const Education = require('../models/Education.model');
+const Job = require('../models/Job.model');
+const Message = require('../models/Message.model');
 const router = express.Router();
-const crypto = require("crypto");
 
-
-const { sendVerificationMail } = require("../config/sendVerificationMail");
 
 router.get('/users', (req, res, next) => {
   User.find()
@@ -19,19 +21,7 @@ router.get('/users', (req, res, next) => {
     })
 });
 
-// router.get('/user', (req, res, next) => {
-//   const { uniqueIdentifier } = req.query;
 
-//   User.findOne({ uniqueIdentifier: uniqueIdentifier })
-//     .populate('portfolio')
-//     .then((user) => {
-//       res.status(200).json({user: user})
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       res.status(500).json({ message: "Not found"});
-//     })
-// })
 
 router.get('/user', async (req, res, next) => {
   try {
@@ -44,10 +34,10 @@ router.get('/user', async (req, res, next) => {
 
     const portfolio = await Portfolio.findOne({ uniqueIdentifier: user.uniqueIdentifier })
                         .select('phone location bio linkedInURL gitHubURL skills interests languages expereinces jobs projects projects messages ')
-                        .populate('skills')
-                        .populate('languages')
+                        // .populate('skills')
+                        // .populate('languages')
                         .populate('jobs')
-                        .populate('interests')
+                        // .populate('interests')
                         .populate('projects')
                         .populate('experiences')
                         .populate('messages')
@@ -81,20 +71,36 @@ router.put('/users/modify', async (req, res, next) => {
     user.email = email;
     user.isAdmin = isAdmin;
     user.uniqueIdentifier = uniqueIdentifier;
-    user.isVerified = false;
-    user.emailToken = crypto.randomBytes(64).toString("hex");
-
 
     const updatedUser = await user.save()
-
-    sendVerificationMail(updatedUser);
 
     res.status(200).json({ updatedUser });
   }catch(error){
     console.log(error)
     res.status(500).json({ message: "Internal Server Error"});
   }
+});
 
+router.delete('/users', async (req, res, next) => {
+  try {
+    const { useremail } = req.query;
+    const user = await User.findOne({ email: useremail });
+    const portfolio = await Portfolio.findOne({ user: user._id });
+
+    await Project.deleteMany({ portfolio: portfolio._id });
+    await Education.deleteMany({ portfolio: portfolio._id });
+    await Job.deleteMany({ portfolio: portfolio._id })
+    await Message.deleteMany({ portfolio: portfolio._id })
+    await portfolio.deleteOne();
+    await user.deleteOne();
+
+    res.status(200).json({ message: "User and associated portfolio deleted"});
+
+
+  }catch(error){
+    console.log(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
 })
 
 
