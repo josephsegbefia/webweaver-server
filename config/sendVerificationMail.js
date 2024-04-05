@@ -9,7 +9,7 @@ const sendVerificationMail = (user) => {
     html: `<p>
               Hello, ${user.firstName}, thank you for signing up to use our services. Please click on the link
               below to verify your account.
-              <a href = https.www.webweavrr.com/verify-email?emailToken=${user.emailToken}>Verify Email</a>
+              <a href = https://webweavrr.com/verify-email?emailToken=${user.emailToken}>Verify Email</a>
           </p>`
   };
 
