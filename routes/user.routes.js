@@ -22,7 +22,7 @@ router.get('/users', (req, res, next) => {
 });
 
 
-
+// users
 router.get('/user', async (req, res, next) => {
   try {
     const { email } = req.query;
