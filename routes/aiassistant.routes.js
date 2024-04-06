@@ -45,7 +45,7 @@ const openai = new OpenAIApi( { apiKey: process.env.OPENAI_API_KEY } );
 //   }
 // }
 
-async function main(name, email, skills, job_title) {
+async function main(name, email, skills, job_title, job_description) {
   const completion = await openai.chat.completions.create({
     messages: [{ role: "system", content:`Use the provided information to create a formatted CV for the candidate. Ensure that each section is properly labeled and formatted for readability. Follow the guidelines below:
     Ensure that each section is correctly spaced and formatted. Remove any unnecessary line breaks or bullet points from the final result.
