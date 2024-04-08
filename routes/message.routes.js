@@ -2,6 +2,7 @@ const express = require('express');
 const Portfolio = require('../models/Portfolio.model');
 const Message = require('../models/Message.model');
 const User = require('../models/User.model');
+const { isAuthenticated } = require('../middleware/jwt.middleware');
 const { sendMessageNotificationMail } = require('../config/sendMessageNotificationMail');
 const mongoose = require('mongoose');
 
@@ -11,42 +12,78 @@ const router = express.Router();
 // Create a message --POST-- /api/portfolios/:uniqueIdentifier/messages
 router.post('/portfolios/:uniqueIdentifier/messages', async (req, res, next) => {
   try {
-    const { senderName, subject, senderEmail, content } = req.body;
+    const { senderName, senderEmail, content, subject } = req.body;
     const { uniqueIdentifier } = req.params;
 
-    const user = await User.findOne({ uniqueIdentifier });
     const foundPortfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier });
 
-    const newMessage = await Message.create({ senderName, senderEmail, subject, content, portfolio: foundPortfolio._id });
-    const updatedPortfolio = await Portfolio.findOneAndUpdate({ uniqueIdentifier: uniqueIdentifier}, {
-      $push: { messages: newMessage._id}
-    });
+    if (!foundPortfolio) {
+      return res.status(404).json({ message: 'Portfolio not found' });
+    }
 
-    sendMessageNotificationMail(user, senderName, senderEmail, subject, content);
+    const newMessage = await Message.create({ senderName, senderEmail, content, subject, portfolio: foundPortfolio._id });
 
-    res.status(200).json({ newMessage, message: 'Thank you for reaching out' });
+    if (!newMessage) {
+      return res.status(500).json({ message: 'Failed to send message' });
+    }
 
-  }catch(error){
+    const updatedPortfolio = await Portfolio.findOneAndUpdate(
+      { uniqueIdentifier: uniqueIdentifier },
+      { $push: { messages: newMessage._id }},
+      { new: true }
+    );
+
+    if (!updatedPortfolio) {
+      return res.status(500).json({ message: 'Failed to update portfolio' });
+    }
+
+    res.status(200).json({ newMessage, message: 'Thank you for your message!' });
+
+  } catch (error) {
     console.log(error);
-    res.status(500).json({ message: 'Ooops, something went wrong!'});
+    res.status(500).json({ message: 'Oops, something went wrong!' });
   }
-})
-
-// Get all messages belonging to a portfolio --GET-- /api/portfolios/:uniqueIndentifier/messages
+});
 router.get('/portfolios/:uniqueIdentifier/messages', (req, res, next) => {
+
   const { uniqueIdentifier } = req.params;
+  const { limit, offset } = req.query;
+
+  const limitValue = parseInt(limit) || 10;
+  const offsetValue = parseInt(offset) || 0;
 
   Portfolio.findOne({ uniqueIdentifier })
     .populate('messages', '-__v')
     .select('messages')
     .then(portfolio => {
-      if(!portfolio){
+      if (!portfolio) {
         return res.status(404).json({ message: 'Portfolio not found' });
       }
-      res.status(200).json(portfolio.messages);
+
+      const totalCount = portfolio.messages.length;
+
+      const totalPages = Math.ceil(totalCount / limitValue);
+
+
+      Portfolio.findOne({ uniqueIdentifier })
+        .populate({
+          path: 'messages',
+          select: '-__v',
+          options: {
+            limit: limitValue,
+            skip: offsetValue
+          }
+        })
+        .select('messages')
+        .then(paginatedPortfolio => {
+          res.status(200).json({ messages: paginatedPortfolio.messages, totalPages });
+        })
+        .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
     })
-    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }))
-});
+    .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }));
+})
+
+
 
 // View one message from the portfolio -- GET-- /api/portfolios/:uniqueIdentifier/messages/:messageId
 router.get('/portfolios/:uniqueIdentifier/messages/:messageId', (req, res, next) => {
@@ -56,7 +93,7 @@ router.get('/portfolios/:uniqueIdentifier/messages/:messageId', (req, res, next)
     .populate({
       path: 'messages',
       match: { _id: messageId },
-      select: '__v'
+      select: '-__v'
     })
     .select('messages')
     .then(portfolio => {
@@ -67,6 +104,37 @@ router.get('/portfolios/:uniqueIdentifier/messages/:messageId', (req, res, next)
     })
     .catch(error => res.status(500).json({ message: 'Ooops, something went wrong!' }))
 })
+
+
+
+router.put('/portfolios/:uniqueIdentifier/messages/:messageId', async (req, res, next) => {
+  try {
+    const { uniqueIdentifier, messageId } = req.params;
+  // Extract the fields to be updated from the request body
+    const { read } = req.body;
+    const portfolio = await Portfolio.findOne({ uniqueIdentifier: uniqueIdentifier}).populate('messages')
+    if(!portfolio){
+      return res.status(404).json({ message: 'Portfolio not found!'});
+    };
+
+    const messageToUpdate = portfolio.messages.find(message => message._id.toString() === messageId);
+
+    if(!messageToUpdate){
+      res.status(404).json({ message: 'Message was not found in your portfolio'})
+    }
+
+    messageToUpdate.read = read;
+
+    await messageToUpdate.save()
+
+
+    res.status(200).json({message: "Updated successfully", updatedMessage: messageToUpdate});
+
+  }catch(error){
+    console.log(error);
+    res.status(500).json({message: "Ooops something happened!"})
+  }
+});
 
 
 // Delete a message --DELETE-- /api/portfolios/:uniqueIdentifier/messages/:messageId

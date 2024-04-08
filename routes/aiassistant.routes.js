@@ -45,37 +45,51 @@ const openai = new OpenAIApi( { apiKey: process.env.OPENAI_API_KEY } );
 //   }
 // }
 
-async function main(name, email, skills, job_title) {
+// async function main(firstName, lastName, email, skills, jobTitle, jobDescription, gitHubURL, linkedInURL, bio, phone) {
+//   const completion = await openai.chat.completions.create({
+//     messages: [{ role: "system", content:`Use the provided information to create a formatted CV for the candidate. Ensure that each section is properly labeled and formatted for readability. Follow the guidelines below:
+//     Ensure that each section is correctly spaced and formatted. Remove any unnecessary line breaks or bullet points from the final result.
+//     - Follow this format:
+//     "#Name: ${name}
+//     #Email: ${email}
+//     #Skills: ${skills}
+//     #Job Title: ${job_title}
+//      return it as a json` }],
+//     model: "gpt-3.5-turbo",
+//   });
+
+//   return completion
+
+//   // const cv = completion.data.choices[0].message["content"].split("\n");
+//   // console.log("cv:", cv);
+//   // return cv;
+// }
+
+async function main(firstName, lastName, email, skills, jobTitle, jobDescription, gitHubURL, linkedInURL, bio, phone) {
+  const prompt = `Use the provided information to create a formatted CV for the candidate. Ensure that each section is properly labeled and formatted for readability. Follow the guidelines below:\n\n- Follow this format:\n  "#Name: ${firstName} ${lastName}\n  #Email: ${email}\n  #Skills: ${skills}\n  #Job Title: ${jobTitle}"`;
+
   const completion = await openai.chat.completions.create({
-    messages: [{ role: "system", content:`Use the provided information to create a formatted CV for the candidate. Ensure that each section is properly labeled and formatted for readability. Follow the guidelines below:
-    Ensure that each section is correctly spaced and formatted. Remove any unnecessary line breaks or bullet points from the final result.
-    - Follow this format:
-    "#Name: ${name}
-    #Email: ${email}
-    #Skills: ${skills}
-    #Job Title: ${job_title}
-     return it as a json` }],
+    messages: [{ role: "system", content: prompt }],
     model: "gpt-3.5-turbo",
   });
 
-  return completion
+  // Process the completion to remove unnecessary line breaks
 
-  // const cv = completion.data.choices[0].message["content"].split("\n");
-  // console.log("cv:", cv);
-  // return cv;
+  const formattedCV = completion.aiResponse.choices[0].message.content.replace(/\n+/g, '\n');
+
+  return formattedCV;
 }
-
 
 router.post('/ai-assistant', async (req, res, next) => {
   try {
-    const {name, email, skills, job_title} = req.body;
-    const aiResponse = await main(name, email, skills, job_title);
+    const {firstName, lastName, email, skills, jobTitle, jobDescription, gitHubURL, linkedInURL, bio, phone} = req.body;
+    const aiResponse = await main(firstName, lastName, email, skills, jobTitle, jobDescription, gitHubURL, linkedInURL, bio, phone);
     console.log("AI Response:", aiResponse);
 
     if(!aiResponse){
       return res.status(400).json({ success: false, error: "Something went wrong."})
     }
-    return res.status(200).json({ success: true,aiResponse });
+    return res.status(200).json({ success: true, aiResponse });
   }catch(error){
     console.error(error);
     return res.status(500).json({ success: false, error: "Something went wrong"})

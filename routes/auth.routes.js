@@ -199,7 +199,7 @@ router.post("/password-reset-email", async (req, res, next) => {
       sendPasswordResetEmail(user);
       res.status(200).json({
         user: user,
-        message: "Password reset email has been sent to your email"
+        message: "Password reset email has been sent to your email. Kindly check your spam if email not found in your inbox"
       });
     } else {
       res.status(404).json({ message: "User with that email does not exist" });

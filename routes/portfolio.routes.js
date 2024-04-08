@@ -69,13 +69,6 @@ router.post('/portfolios', async (req, res, next) => {
 router.get('/portfolios/:uniqueIdentifier', (req, res, next) => {
   const { uniqueIdentifier } = req.params;
 
-  // Portfolio.fondOne({ uniqueIdentifier })
-  //   .then((foundPortfolio) => {
-  //     if(!foundPortfolio){
-  //       res.status(401).json({ message: "Portfolio not found" });
-  //       return;
-  //     }
-  //   })
 
   Portfolio.find({ uniqueIdentifier })
     .populate('projects')
@@ -131,5 +124,25 @@ router.delete('/portfolios/:uniqueIdentifier', async (req, res, next) => {
     res.status(500).json({ message: 'Internal Server Error'})
   }
 })
+
+
+// FOR MAKING OF CV
+router.get('/cv/portfolios/:uniqueIdentifier', (req, res, next) => {
+  const { uniqueIdentifier } = req.params;
+
+
+  Portfolio.find({ uniqueIdentifier })
+    .populate('projects')
+    .populate('educations')
+    .populate('experiences')
+    .then((portfolio) => {
+      res.status(200).json({message: "User data collected successfully", portfolio})
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ message: "Internal Server Error"})
+    })
+})
+
 
 module.exports = router;
