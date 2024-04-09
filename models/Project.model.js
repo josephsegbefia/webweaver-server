@@ -18,8 +18,6 @@ function urlSchemaNotRequired(opts = {}) {
   const { required } = opts;
   return {
     type: String,
-    // required: !!required,
-    required: false,
     validate: {
       validator: isURL,
       message: (props) => `${props.value} is not a valid URL`
