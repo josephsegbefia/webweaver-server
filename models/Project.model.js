@@ -14,16 +14,16 @@ function urlSchema(opts = {}) {
   };
 }
 
-function urlSchemaNotRequired(opts = {}) {
-  const { required } = opts;
-  return {
-    type: String,
-    validate: {
-      validator: isURL,
-      message: (props) => `${props.value} is not a valid URL`
-    }
-  };
-}
+const urlSchemaNotRequired = {
+  type: String,
+  validate: {
+    validator: function(value) {
+      // Check if the value is a valid URL using the validator library
+      return !value || isURL(value);
+    },
+    message: props => `${props.value} is not a valid URL`
+  }
+};
 
 const projectSchema = new Schema({
   title: String,
@@ -31,8 +31,8 @@ const projectSchema = new Schema({
   techsUsed: [String],
   description: String,
   imgUrl: String,
-  liveLink: urlSchemaNotRequired(),
-  gitHubLink: urlSchemaNotRequired(),
+  liveLink: urlSchemaNotRequired,
+  gitHubLink:  urlSchemaNotRequired,
   portfolio: { type: Schema.Types.ObjectId, ref: 'Portfolio' }
 },
 {

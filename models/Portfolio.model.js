@@ -2,15 +2,16 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 const { isURL, isEmail } = require("validator");
 
-function urlSchemaNotRequired() {
-  return {
-    type: String,
-    validate: {
-      validator: isURL,
-      message: (props) => `${props.value} is not a valid URL`
-    }
-  };
-}
+const urlSchemaNotRequired = {
+  type: String,
+  validate: {
+    validator: function(value) {
+      // Check if the value is a valid URL using the validator library
+      return !value || isURL(value);
+    },
+    message: props => `${props.value} is not a valid URL`
+  }
+};
 
 function emailSchema() {
   return {
@@ -34,8 +35,8 @@ const portfolioSchema = new Schema({
   avatarURL: { type: String },
   skills: [String],
   languages: [String],
-  linkedInURL: urlSchemaNotRequired(),
-  gitHubURL: urlSchemaNotRequired(),
+  linkedInURL: urlSchemaNotRequired,
+  gitHubURL: urlSchemaNotRequired,
   uniqueIdentifier: { type: String},
   interests: [String],
   experiences: [{ type: Schema.Types.ObjectId, ref: 'Experience' }],
