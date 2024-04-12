@@ -28,8 +28,8 @@ router.post('/portfolios', async (req, res, next) => {
     const userLastName = portfolioUser.lastName;
     const userFirstName = portfolioUser.firstName;
     const userEmail = portfolioUser.email;
-    const name = userFirstName.toLowerCase();
-    const surname = userLastName.toLowerCase();
+    const name = userFirstName.trim().toLowerCase();
+    const surname = userLastName.trim().toLowerCase();
     let hex = crypto.randomBytes(64).toString("hex").slice(0, 6)
     let uniqueIdentifier = `${name}-${surname}-${hex}`;
     console.log("Port User===>", portfolioUser);
